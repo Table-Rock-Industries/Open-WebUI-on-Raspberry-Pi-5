@@ -151,7 +151,34 @@ You can manage Ollama models directly through Open WebUI.
 2. To download a new model, enter the model name (e.g., `gemma:2b`) and click the download button.
 3. Wait for the model to download, then select it from the chat interface.
 
-## Step 9: Troubleshooting
+
+## Step 9: Navigate to Model Management
+1. In the Open WebUI interface, click the **Settings** icon (gear) in the top-right or left sidebar.
+2. Select **Models** from the settings menu to open the model management page.
+
+## Step 10: Add Gemma3:1b
+1. In the **Models** section, locate the input field for adding a new model.
+2. Enter the model name exactly as: `gemma3:1b`.
+3. Click the **Download** button (usually an arrow or plus icon) next to the input field.
+4. A progress bar or status indicator will appear, showing the download progress. The `Gemma3:1b` model is approximately 2GB, so download time depends on your internet speed.
+5. Once downloaded, the model will appear in the list of available models.
+
+## Step 11: Add Gemma3:4b
+1. Repeat the process for `Gemma3:4b`.
+2. In the same **Models** section, enter the model name: `gemma3:4b`.
+3. Click the **Download** button.
+4. The `Gemma3:4b` model is approximately 5GB, so ensure sufficient disk space and wait for the download to complete.
+5. The model will be added to the available models list once downloaded.
+
+## Step 5: Verify Model Availability
+1. Return to the main chat interface in Open WebUI.
+2. Click the model dropdown menu (usually at the top of the chat window).
+3. Confirm that `gemma3:1b` and `gemma3:4b` appear in the list.
+4. Select one of the models and send a test prompt (e.g., “What is 2 + 2?”) to ensure it responds correctly.
+
+
+
+## Step 12: Troubleshooting
 - **Open WebUI cannot connect to Ollama**:
   - Ensure Ollama is running: `sudo systemctl status ollama`.
   - Verify the `OLLAMA_BASE_URL` in the `docker-compose.yml` file.
