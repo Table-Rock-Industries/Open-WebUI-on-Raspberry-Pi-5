@@ -213,3 +213,238 @@ To update Open WebUI to the latest version:
 - [Pi My Life Up: Self-hosting an AI Chatbot with Open WebUI on the Raspberry Pi](https://pimylifeup.com/raspberry-pi-open-webui/)[](https://pimylifeup.com/raspberry-pi-open-webui/)
 - [Open WebUI Documentation](https://docs.openwebui.com/)[](https://docs.openwebui.com/)
 - [Ollama on Raspberry Pi](https://pimylifeup.com/raspberry-pi-ollama/)[](https://pimylifeup.com/raspberry-pi-ollama/)
+
+
+# Installing LiteLLM on Raspberry Pi 5 with Existing Open WebUI and API Integrations via Admin UI
+
+This guide provides instructions for installing LiteLLM on a Raspberry Pi 5, configuring it using the LiteLLM Admin UI where possible, connecting it to an existing Open WebUI installation, integrating with Grok, Anthropic, and OpenAI APIs, and testing to ensure all models work correctly. The project will be organized in a `litellm` folder.
+
+## Introduction
+
+LiteLLM is an AI proxy that simplifies managing multiple AI models from different providers through a unified API endpoint. Paired with an existing Open WebUI setup, it enables a user-friendly interface for interacting with AI models. This guide leverages the LiteLLM Admin UI to streamline configuration.
+
+## Prerequisites
+
+- **Hardware**: Raspberry Pi 5 (8GB RAM recommended)
+- **Operating System**: Raspberry Pi OS Bookworm (64-bit)
+- **Internet Connection**: Required for downloading packages and Docker images
+- **Open WebUI**: Already installed and running (e.g., on port 3000)
+- **API Keys**:
+  - Grok API key (from xAI, see https://x.ai/api)
+  - Anthropic API key
+  - OpenAI API key
+- Basic familiarity with terminal commands
+
+## Step 1: Update the Raspberry Pi and Install Docker
+
+1. Update your Raspberry Pi:
+   ```bash
+   sudo apt update
+   sudo apt full-upgrade -y
+   ```
+
+2. Install Docker if not already installed:
+   ```bash
+   curl -fsSL https://get.docker.com -o get-docker.sh
+   sudo sh get-docker.sh
+   ```
+
+3. Add your user to the Docker group to run Docker without `sudo`:
+   ```bash
+   sudo usermod -aG docker $USER
+   ```
+
+4. Log out and back in, or run:
+   ```bash
+   newgrp docker
+   ```
+
+5. Verify Docker installation:
+   ```bash
+   docker --version
+   ```
+
+## Step 2: Set Up the Project Directory
+
+Create a directory for the LiteLLM project:
+```bash
+mkdir ~/litellm && cd ~/litellm
+```
+
+## Step 3: Set Up Docker Compose for LiteLLM
+
+Create a `docker-compose.yml` file to run LiteLLM:
+```bash
+nano docker-compose.yml
+```
+Add the following:
+```yaml
+version: '3.9'
+services:
+  litellm:
+    image: ghcr.io/berriai/litellm:main-latest
+    ports:
+      - "4000:4000"
+    env_file:
+      - ./.env
+    command: --port 4000
+```
+Save and exit (`Ctrl+O`, `Enter`, `Ctrl+X`).
+
+## Step 4: Configure LiteLLM Environment
+
+1. Create a `.env` file to store the LiteLLM master key, salt key, and Admin UI credentials:
+   ```bash
+   nano .env
+   ```
+   Add the following, replacing `your_secure_password` with a strong password:
+   ```
+   LITELLM_MASTER_KEY=sk-X7Kp9mL2Qw
+   LITELLM_SALT_KEY=sk-Z9vR4jP8Ys
+   ```
+   Save and exit.
+
+2. Start the LiteLLM service:
+   ```bash
+   docker-compose up -d
+   ```
+
+## Step 5: Configure LiteLLM via Admin UI
+
+1. Open a browser and navigate to `http://<Raspberry-Pi-IP>:4000/ui` (e.g., `http://192.168.1.100:4000/ui`). Find your IP with:
+   ```bash
+   hostname -I
+   ```
+
+2. Log in with:
+   - Username: `admin`
+   - Password: `your_secure_password` (from `.env`)
+
+3. **Add API Keys**:
+   - Go to the **Keys** or **Settings** section in the Admin UI.
+   - Add the following API keys (replace placeholders with your actual keys):
+     - **Grok**: Name it `GROK_API_KEY`, value `your_grok_api_key`
+     - **Anthropic**: Name it `ANTHROPIC_API_KEY`, value `your_anthropic_api_key`
+     - **OpenAI**: Name it `OPENAI_API_KEY`, value `your_openai_api_key`
+   - Save the keys.
+
+4. **Configure Models**:
+   - Navigate to the **Models** section.
+   - Add the following models (adjust model names based on provider documentation):
+     - **Grok Model**:
+       - Model Name: `grok-model`
+       - Provider: `grok`
+       - Model: `grok/model-name` (replace with actual Grok model, e.g., `grok/created_by_xai`)
+       - API Key: Select `GROK_API_KEY`
+     - **Claude-3-Sonnet**:
+       - Model Name: `claude-3-sonnet`
+       - Provider: `anthropic`
+       - Model: `claude-3-sonnet-20240229`
+       - API Key: Select `ANTHROPIC_API_KEY`
+     - **GPT-4o**:
+       - Model Name: `gpt-4o`
+       - Provider: `openai`
+       - Model: `gpt-4o`
+       - API Key: Select `OPENAI_API_KEY`
+   - Save each model configuration.
+
+5. **Create a Virtual Key** for Open WebUI:
+   - Go to the **Keys** section.
+   - Generate a new virtual key (e.g., `sk-webui-5678`).
+   - Copy this key for use in Open WebUI.
+
+## Step 6: Test LiteLLM
+
+Verify LiteLLM is working by sending a test request:
+```bash
+curl -X POST http://localhost:4000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-X7Kp9mL2Qw" \
+  -d '{
+    "model": "gpt-4o",
+    "messages": [{"role": "user", "content": "Hello"}]
+  }'
+```
+You should receive a JSON response with a greeting. Repeat for `grok-model` and `claude-3-sonnet` to ensure all models are accessible.
+
+## Step 7: Connect Open WebUI to LiteLLM
+
+1. Open a browser and go to `http://<Raspberry-Pi-IP>:3000` (where Open WebUI is running).
+2. Log in with your Open WebUI admin account.
+3. Go to **Admin Panel > Settings > Connections > OpenAI API**.
+4. Enable the OpenAI API connection.
+5. Set:
+   - **Base URL**: `http://<Raspberry-Pi-IP>:4000/v1` (e.g., `http://192.168.1.100:4000/v1`)
+   - **API Key**: `sk-webui-5678` (the virtual key from Step 5)
+6. Save the settings.
+
+## Step 8: Test Open WebUI
+
+1. In Open WebUI, go to the chat interface.
+2. Check the model dropdown; you should see `grok-model`, `claude-3-sonnet`, and `gpt-4o`.
+3. For each model:
+   - Select the model.
+   - Send a test prompt (e.g., “What is the capital of France?”).
+   - Verify the model responds correctly (e.g., “The capital of France is Paris.”).
+4. If any model fails, check the LiteLLM logs:
+   ```bash
+   docker logs litellm-litellm-1
+   ```
+
+## Step 9: Configure Firewall for Network Access
+
+To allow other devices on the network to access the LiteLLM Admin UI (Open WebUI is assumed to be already accessible):
+
+1. Install `ufw` if not present:
+   ```bash
+   sudo apt install ufw -y
+   ```
+
+2. Allow port 4000 (LiteLLM):
+   ```bash
+   sudo ufw allow 4000/tcp
+   ```
+
+3. Enable the firewall if not already enabled:
+   ```bash
+   sudo ufw enable
+   ```
+
+4. Verify firewall status:
+   ```bash
+   sudo ufw status
+   ```
+
+## Step 10: Keeping LiteLLM Updated
+
+To update LiteLLM to the latest version:
+1. Navigate to the project directory:
+   ```bash
+   cd ~/litellm
+   ```
+2. Pull the latest image and restart:
+   ```bash
+   docker-compose pull
+   docker-compose up -d
+   ```
+
+## Troubleshooting
+
+- **Admin UI not accessible**: Ensure LiteLLM is running (`docker ps`) and port 4000 is open (`sudo lsof -i :4000`).
+- **Models not appearing in Open WebUI**: Verify the Base URL and API key in Open WebUI settings, and check model configurations in the LiteLLM Admin UI.
+- **API errors**: Confirm API keys are correct in the Admin UI and models are supported (see LiteLLM documentation or provider model lists).
+- **Performance issues**: Ensure no other heavy processes are running on the Raspberry Pi 5, as API-based models rely on network latency and provider performance.
+
+## Notes
+
+- **Security**: The LiteLLM Admin UI is exposed on the network. For home use, this is generally safe, but for office environments, consider using a VPN or additional authentication. Avoid exposing port 4000 to the public internet without securing it.
+- **Grok API**: Model names may vary. Check https://x.ai/api for the latest Grok model details.
+- **LiteLLM Admin UI**: Some advanced configurations may require editing `config.yaml`. Refer to [LiteLLM documentation](https://docs.litellm.ai/) if needed.
+
+## References
+
+- [LiteLLM Documentation](https://docs.litellm.ai/)
+- [Open WebUI Documentation](https://docs.openwebui.com/)
+- [xAI API](https://x.ai/api)
+- [Anthropic API](https://docs.anthropic.com/)
+- [OpenAI API](https://platform.openai.com/docs/)
