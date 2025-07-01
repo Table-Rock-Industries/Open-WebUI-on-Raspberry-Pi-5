@@ -103,6 +103,9 @@ Open WebUI will be installed using Docker for simplicity and ease of updates.
 4. Save and exit the editor (`Ctrl+O`, `Enter`, `Ctrl+X`).
 5. Start the Open WebUI container:
    ```bash
+   sudo apt install -y python3-pip
+   pip3 install docker-compose
+
    docker-compose up -d
    ```
 6. Verify the container is running:
