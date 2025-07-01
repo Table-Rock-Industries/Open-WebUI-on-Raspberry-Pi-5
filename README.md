@@ -318,6 +318,11 @@ Save and exit (`Ctrl+O`, `Enter`, `Ctrl+X`).
    docker-compose up -d
    ```
 
+   check to see that litellm is running:
+   ```bash
+   docker ps
+   ```
+
 sudo ufw allow 11434/tcp
 ```bash
    sudo ufw allow 11434/tcp
