@@ -82,7 +82,6 @@ Open WebUI will be installed using Docker for simplicity and ease of updates.
    ```
 3. Add the following content to `docker-compose.yml`:
    ```yaml
-   version: '3.9'
    services:
      open-webui:
        image: ghcr.io/open-webui/open-webui:main
@@ -91,10 +90,6 @@ Open WebUI will be installed using Docker for simplicity and ease of updates.
          - open-webui-data:/app/backend/data
        ports:
          - "3000:8080"
-       environment:
-         - OLLAMA_BASE_URL=http://host.docker.internal:11434
-       extra_hosts:
-         - "host.docker.internal:host-gateway"
        restart: unless-stopped
    volumes:
      open-webui-data:
