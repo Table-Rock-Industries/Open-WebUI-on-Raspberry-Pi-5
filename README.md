@@ -273,60 +273,55 @@ LiteLLM is an AI proxy that simplifies managing multiple AI models from differen
    docker --version
    ```
 
-## Step 2: Set Up the Project Directory
+# LiteLLM Setup Guide
 
-Create a directory for the LiteLLM project:
+## Step 2: Clone the LiteLLM Repository
+Clone the LiteLLM repository and navigate to the project directory:
+
 ```bash
-mkdir ~/litellm && cd ~/litellm
+git clone https://github.com/BerriAI/litellm.git ~/litellm && cd ~/litellm
 ```
 
-## Step 3: Set Up Docker Compose for LiteLLM
 
-Create a `docker-compose.yml` file to run LiteLLM:
-```bash
-nano docker-compose.yml
-```
-Add the following:
-```yaml
-version: '3.9'
-services:
-  litellm:
-    image: ghcr.io/berriai/litellm:main-latest
-    ports:
-      - "4000:4000"
-    env_file:
-      - ./.env
-    command: --port 4000
-```
-Save and exit (`Ctrl+O`, `Enter`, `Ctrl+X`).
 
 ## Step 4: Configure LiteLLM Environment
+Create a `.env` file to store the LiteLLM master key, salt key, and Admin UI credentials:
 
-1. Create a `.env` file to store the LiteLLM master key, salt key, and Admin UI credentials:
-   ```bash
-   nano .env
-   ```
-   Add the following, replacing `your_secure_password` with a strong password:
-   ```
-   LITELLM_MASTER_KEY=sk-X7Kp9mL2Qw
-   LITELLM_SALT_KEY=sk-Z9vR4jP8Ys
-   ```
-   Save and exit.
-
-2. Start the LiteLLM service:
-   ```bash
-   docker-compose up -d
-   ```
-
-   check to see that litellm is running:
-   ```bash
-   docker ps
-   ```
-
-sudo ufw allow 11434/tcp
 ```bash
-   sudo ufw allow 11434/tcp
-   ```
+nano .env
+```
+
+Add the following, replacing `your_secure_password` with a strong password:
+
+```bash
+LITELLM_MASTER_KEY=sk-X7Kp9mL2Qw
+LITELLM_SALT_KEY=sk-Z9vR4jP8Ys
+```
+
+Save and exit.
+
+## Step 5: Start the LiteLLM Service
+Start the LiteLLM service in detached mode:
+
+```bash
+docker-compose up -d
+```
+
+## Step 6: Verify LiteLLM is Running
+Check that the LiteLLM container is running:
+
+```bash
+docker ps
+```
+
+## Step 7: Configure Firewall
+Allow traffic on port 11434 for LiteLLM:
+
+```bash
+sudo ufw allow 11434/tcp
+```
+
+
 
 ## Step 5: Configure LiteLLM via Admin UI
 
