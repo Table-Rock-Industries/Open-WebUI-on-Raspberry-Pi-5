@@ -318,6 +318,11 @@ Save and exit (`Ctrl+O`, `Enter`, `Ctrl+X`).
    docker-compose up -d
    ```
 
+sudo ufw allow 11434/tcp
+```bash
+   sudo ufw allow 11434/tcp
+   ```
+
 ## Step 5: Configure LiteLLM via Admin UI
 
 1. Open a browser and navigate to `http://<Raspberry-Pi-IP>:4000/ui` (e.g., `http://192.168.1.100:4000/ui`). Find your IP with:
