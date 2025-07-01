@@ -128,6 +128,14 @@ To allow other devices on the network to access Open WebUI, configure the Raspbe
    sudo ufw status
    ```
 
+   
+
+   sudo ufw allow 11434/tcp
+
+   ```bash
+   sudo ufw allow 11434/tcp
+   ```
+
 ## Step 6: Access Open WebUI
 1. On the Raspberry Pi, open a web browser and navigate to `http://localhost:3000`.
 2. From another device on the same network, find the Raspberry Pi’s IP address:
