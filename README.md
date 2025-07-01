@@ -72,7 +72,10 @@ Open WebUI will be installed using Docker for simplicity and ease of updates.
    ```bash
    mkdir ~/openwebui
    cd ~/openwebui
+   
    ```
+
+   then clear to clear the terminal
 2. Create a Docker Compose file to define the Open WebUI service:
    ```bash
    nano docker-compose.yml
